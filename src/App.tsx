@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { Router, Route, Switch } from 'react-router-dom'
+import routes from './routers/Router'
+import { createBrowserHistory } from 'history'
+// tslint:disable-next-line:no-import-side-effect
+import './App.less'
+
+const history = createBrowserHistory()
 
 const App: React.FC = () => {
+  const renderRouter = () => {
+    return routes.map(router => {
+      return <Route path={router.path} key={router.path} exact={router.exact} component={router.componet} />
+    })
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router history={history}>
+      <Switch>{renderRouter()}</Switch>
+    </Router>
+  )
 }
 
-export default App;
+export default App
