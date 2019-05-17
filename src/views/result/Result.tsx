@@ -67,31 +67,35 @@ const Result = () => {
       for(var key in item.doc){
           if (key.indexOf("title")!=-1){
             var temp_title= item.highlight[key]? item.highlight[key]: item.doc[key]
-            console.log('handleSearchResults21',key,temp_title)
-            title+= temp_title!=null? temp_title:'' + " ------ "
+            title+= temp_title!=null? temp_title  + addSpace() :''
           }
           if (key.indexOf("publish_time")!=-1 || key.indexOf("create_time" || key.indexOf("issus_time"))!=-1){
             publish_time= item.highlight[key]? item.highlight[key]: item.doc[key]
           }
+          if (key.indexOf("org")!=-1 || key.indexOf("no")!=-1){
+            describe+=(item.highlight[key]? item.highlight[key]: item.doc[key]) + addSpace()
+          }
           if (key.indexOf("abs")!=-1 || key.indexOf("describe")!=-1){
-            describe= item.highlight[key]? item.highlight[key]: item.doc[key]
+            describe+=( item.highlight[key]? item.highlight[key]: item.doc[key]) + addSpace()
           } 
   　　}
-  // console.log('handleSearchResults2',title,publish_time,describe)
      return {
-      key: i,
-      title: formatData(title),
-      publish_time: publish_time,
-      content:  formatData(describe)
-    }
+        key: i,
+        title: formatData(title),
+        publish_time: formatData(publish_time),
+        content:  formatData(describe)
+      }
    
     })
     setResults(newResults)
   }
 
+  const addSpace = ()=>{
+    return "&nbsp&nbsp&nbsp&nbsp&nbsp"
+  }
 
   const formatData = (data:any)=>{
-    return (data && data!=null)?data.replace('...', '').replace(/\'/g, '"'):""
+    return (data && data!=null)?data.replace('...', '').replace(/\'/g, '"').replace(/null/g,''):""
   }
 
   /**
@@ -189,6 +193,7 @@ const Result = () => {
         {renderLoadingComponent()}
         {renderSearchResults()}
       </div>
+      
     </div>
   )
 }
