@@ -8,20 +8,12 @@ export interface IState {
   pageLoading: boolean
 }
 
-export function makeStore (): Store<IState, Actions> {
-  return createStore(
-    reducer,
-    INITIAL_STATE,
-    composeWithDevTools()
-  )
+export function makeStore(): Store<IState, Actions> {
+  return createStore(reducer, INITIAL_STATE, composeWithDevTools())
 }
 
 export const INITIAL_STATE: IState = {
   pageLoading: false
 }
 
-export const { StoreContext, useDispatch, useMappedState } = create<
-  IState,
-  Actions,
-  Store<IState, Actions>
->()
+export const { StoreContext, useDispatch, useMappedState } = create<IState, Actions, Store<IState, Actions>>()

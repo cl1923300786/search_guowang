@@ -8,6 +8,21 @@ export const API_URL: string = process.env.NODE_ENV === 'development' ? '' : ''
  */
 export const REQUEST_TIME_OUT: number = 10000
 
+/**
+ * 分页最多显示的页数(最多10个按钮)
+ */
+export const defaultPageNationsLength: number = 10
+
+/**
+ * 当前分页序号为6时，至为中间页。(即右边4页，左边5页)
+ */
+export const defaultPageNationsInterval: number = 6
+
+/**
+ * 搜索默认每次搜10条
+ */
+export const defaultPageSize: number = 10
+
 export const defaultSearchResults: any[] = [
   {
     highlight: {

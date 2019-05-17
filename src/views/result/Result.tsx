@@ -5,20 +5,46 @@ import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
 import styles from './Result.module.less'
 import SearchItem from '../../components/results/SearchItem'
-import { defaultSearchResults } from '../../config/Constant'
-import { API_URL } from '../../config/Constant'
+import { defaultSearchResults, defaultPageSize } from '../../config/Constant'
+import PageNation from '../../components/pagenation/PageNation'
 
-const pageParams = decodeURIComponent(window.location.search.replace('?', '').split('=')[1])
+const defaultRequestParams = {
+  q: decodeURIComponent(
+    window.location.search
+      .replace('?', '')
+      .split('&')[0]
+      .split('=')[1]
+  ),
+  page: parseInt(
+    window.location.search
+      .replace('?', '')
+      .split('&')[1]
+      .split('=')[1],
+    10
+  ),
+  size: defaultPageSize
+}
 
 const Result = () => {
+  const pageParams = decodeURIComponent(
+    window.location.search
+      .replace('?', '')
+      .split('&')[0]
+      .split('=')[1]
+  )
   const [query, setQuery] = useState(pageParams)
   const state: IState = useMappedState(useCallback((globalState: IState) => globalState, []))
   const dispatch: Dispatch<Actions> = useDispatch()
   const [loading, setLoading] = useState(true)
   const [results, setResults] = useState<any[]>([])
+  const [requestParams, setRequestParams] = useState(defaultRequestParams)
+  const [hrefs, setHrefs] = useState<any[]>([])
+  const [nextHref, setNextHref] = useState()
+  const [previousHref, setPreviousHref] = useState()
+  const [pages, setPages] = useState()
 
   useEffect(() => {
-    getSearchResult(pageParams)
+    getSearchResult(requestParams)
   }, [])
 
   /**
@@ -33,22 +59,49 @@ const Result = () => {
    */
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    getSearchResult(query)
+    setRequestParams({
+      q: decodeURIComponent(window.location.search.replace('?', '').split('=')[1]),
+      page: parseInt(
+        window.location.search
+          .replace('?', '')
+          .split('&')[1]
+          .split('=')[1],
+        10
+      ),
+      size: 10
+    })
+    window.location.href = `${window.location.origin}${window.location.pathname}?q=${query}&page=${1}&size=${
+      defaultRequestParams.size
+    }`
   }
 
-  const getSearchResult = async (q: string) => {
+  /**
+   * 获取搜索结果
+   */
+  const getSearchResult = async (param: any) => {
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
       url: '/search/queryStd',
-      api: API_URL,
-      method: 'get',
       params: {
-        q: q
+        q: param.q,
+        pageNo: param.page - 1,
+        pageSize: param.size
       }
     })
-    console.log('getSearchResult',res.data)
     if (res && res.status === 200 && res.data) {
       handleSearchResults2(res.data.result.hits)
+      handlePageHrefs(res.data.result.totalHits)
+      setPages(Math.ceil(res.data.result.totalHits / param.size))
+      setNextHref(
+        `${window.location.origin}${window.location.pathname}?q=${query}&page=${requestParams.page + 1}&size=${
+          defaultRequestParams.size
+        }`
+      )
+      setPreviousHref(
+        `${window.location.origin}${window.location.pathname}?q=${query}&page=${requestParams.page - 1}&size=${
+          defaultRequestParams.size
+        }`
+      )
     } else {
       console.log('search error')
       handleSearchResults(defaultSearchResults)
@@ -56,46 +109,69 @@ const Result = () => {
     setLoading(false)
   }
 
-/**
+  /**
+   * 获取所有分页的href
+   */
+  const handlePageHrefs = (total: number) => {
+    const newHrefs = []
+    const length = Math.ceil(total / defaultRequestParams.size)
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < length; i++) {
+      newHrefs.push({
+        key: i,
+        href: `${window.location.origin}${window.location.pathname}?q=${query}&page=${i + 1}&size=${
+          defaultRequestParams.size
+        }`,
+        number: i + 1
+      })
+    }
+    setHrefs(newHrefs)
+  }
+
+  /**
    * 处理搜索结果（添加title和content）
    */
   const handleSearchResults2 = (data: any[]) => {
-    const newResults = data.map((item: any,i:number) => {
-      var title=''
-      var publish_time=''
-      var describe=''
-      for(var key in item.doc){
-          if (key.indexOf("title")!=-1){
-            var temp_title= item.highlight[key]? item.highlight[key]: item.doc[key]
-            title+= temp_title!=null? temp_title  + addSpace() :''
-          }
-          if (key.indexOf("publish_time")!=-1 || key.indexOf("create_time" || key.indexOf("issus_time"))!=-1){
-            publish_time= item.highlight[key]? item.highlight[key]: item.doc[key]
-          }
-          if (key.indexOf("org")!=-1 || key.indexOf("no")!=-1){
-            describe+=(item.highlight[key]? item.highlight[key]: item.doc[key]) + addSpace()
-          }
-          if (key.indexOf("abs")!=-1 || key.indexOf("describe")!=-1){
-            describe+=( item.highlight[key]? item.highlight[key]: item.doc[key]) + addSpace()
-          } 
-  　　}
-     return {
+    const newResults = data.map((item: any, i: number) => {
+      let title = ''
+      let publishTime = ''
+      let describe = ''
+      for (const key of Object.keys(item.doc)) {
+        if (key.indexOf('title') !== -1) {
+          const tempTitle = item.highlight[key] ? item.highlight[key] : item.doc[key]
+          title += tempTitle !== null ? tempTitle + addSpace() : ''
+        }
+        if (key.indexOf('publish_time') !== -1 || key.indexOf('create_time' || key.indexOf('issus_time')) !== -1) {
+          publishTime = item.highlight[key] ? item.highlight[key] : item.doc[key]
+        }
+        if (key.indexOf('org') !== -1 || key.indexOf('no') !== -1) {
+          describe += (item.highlight[key] ? item.highlight[key] : item.doc[key]) + addSpace()
+        }
+        if (key.indexOf('abs') !== -1 || key.indexOf('describe') !== -1) {
+          describe += (item.highlight[key] ? item.highlight[key] : item.doc[key]) + addSpace()
+        }
+      }
+      return {
         key: i,
         title: formatData(title),
-        publish_time: formatData(publish_time),
-        content:  formatData(describe)
+        publish_time: formatData(publishTime),
+        content: formatData(describe)
       }
-   
     })
     setResults(newResults)
   }
 
-  const addSpace = ()=>{
-    return "&nbsp&nbsp&nbsp&nbsp&nbsp"
+  const addSpace = () => {
+    return '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
   }
 
-  const formatData = (data:any)=>{
-    return (data && data!=null)?data.replace('...', '').replace(/\'/g, '"').replace(/null/g,''):""
+  const formatData = (data: any) => {
+    return data && data !== null
+      ? data
+          .replace('...', '')
+          .replace(/'/g, '"')
+          .replace(/null/g, '')
+      : ''
   }
 
   /**
@@ -104,8 +180,8 @@ const Result = () => {
   const handleSearchResults = (data: any[]) => {
     const newResults = data.map((i: any) => {
       const usedStd = i.highlight.used_std
-        ? `${JSON.parse(i.highlight.used_std.replace('...', '').replace(/\'/g, '"'))[0].cygx} ${
-            JSON.parse(i.highlight.used_std.replace('...', '').replace(/\'/g, '"'))[0].bcybz
+        ? `${JSON.parse(i.highlight.used_std.replace('...', '').replace(/'/g, '"'))[0].cygx} ${
+            JSON.parse(i.highlight.used_std.replace('...', '').replace(/'/g, '"'))[0].bcybz
           } `
         : ''
       return {
@@ -124,8 +200,8 @@ const Result = () => {
     const zhTitle = item.doc.zh_title + ' '
     const issueDate = item.doc.issus_date + ' '
     const usedStd = item.highlight.used_std
-      ? `${JSON.parse(item.highlight.used_std.replace('...', '').replace(/\'/g, '"'))[0].cygx} ${
-          JSON.parse(item.highlight.used_std.replace('...', '').replace(/\'/g, '"'))[0].bcybz
+      ? `${JSON.parse(item.highlight.used_std.replace('...', '').replace(/'/g, '"'))[0].cygx} ${
+          JSON.parse(item.highlight.used_std.replace('...', '').replace(/'/g, '"'))[0].bcybz
         } `
       : ''
     const issueOrg = item.highlight.issue_org ? `${item.highlight.issue_org} ` : ''
@@ -137,8 +213,9 @@ const Result = () => {
    * 重置表单
    */
   const resetForm = () => {
-    setQuery('')
-    getSearchResult('')
+    window.location.href = `${window.location.origin}${window.location.pathname}?q=&page=${1}&size=${
+      defaultRequestParams.size
+    }`
   }
 
   /**
@@ -159,9 +236,44 @@ const Result = () => {
     if (loading) {
       return <></>
     } else {
-      return results.map((i: any) => {
-        return <SearchItem key={i._id} title={i.title} content={i.content} />
+      return results.map((i: any, index: number) => {
+        return <SearchItem key={index} title={i.title} content={i.content} />
       })
+    }
+  }
+
+  /**
+   * 渲染分页组件
+   */
+  const renderPageNation = () => {
+    if (loading) {
+      return <></>
+    } else if (results.length > 0) {
+      return (
+        <PageNation
+          currentIndex={requestParams.page}
+          pageSize={pages}
+          nextHref={nextHref}
+          previousHref={previousHref}
+          hrefs={hrefs}
+        />
+      )
+    } else if (!query) {
+      return <div className={styles.emptyWord}>请输入关键词后重试</div>
+    } else if (query === defaultRequestParams.q) {
+      return (
+        <div className={styles.noResult}>
+          <p>
+            <span>很抱歉，没有找到与</span>
+            <em>{query}</em>
+            <span>相关的结果</span>
+          </p>
+          <div className={styles.tipsHead}>温馨提示:</div>
+          <ul>
+            <li>请检查您的输入是否正确</li>
+          </ul>
+        </div>
+      )
     }
   }
 
@@ -193,7 +305,7 @@ const Result = () => {
         {renderLoadingComponent()}
         {renderSearchResults()}
       </div>
-      
+      {renderPageNation()}
     </div>
   )
 }

@@ -7,7 +7,6 @@ import { Dispatch } from 'redux'
 
 export interface IParams {
   url: string
-  api: string
   method?: string
   params?: object
   data?: object | any

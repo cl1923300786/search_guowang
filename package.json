@@ -77,6 +77,8 @@
     "style-loader": "0.23.1",
     "terser-webpack-plugin": "1.2.3",
     "ts-pnp": "1.1.2",
+    "tslint": "^5.16.0",
+    "tslint-loader": "^3.5.4",
     "typescript": "3.4.5",
     "url-loader": "1.1.2",
     "webpack": "4.29.6",
@@ -87,7 +89,8 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test"
+    "test": "react-app-rewired test",
+    "lint": "tslint -c tslint.json src/**/*.{ts,tsx}"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -154,7 +157,7 @@
   "devDependencies": {
     "eslint-plugin-prettier": "^3.1.0",
     "redux-devtools-extension": "^2.13.8",
-    "tslint": "^5.16.0",
+    "tslint-config-prettier": "^1.18.0",
     "tslint-language-service": "^0.9.9",
     "tslint-plugin-prettier": "^2.0.1",
     "tslint-react": "^4.0.0"

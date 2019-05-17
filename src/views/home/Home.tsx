@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styles from './Home.module.less'
 import { withRouter } from 'react-router-dom'
+import { defaultPageSize } from '../../config/Constant'
 
 const HomePage = (props: any) => {
   const [query, setQuery] = useState('')
@@ -17,7 +18,7 @@ const HomePage = (props: any) => {
    */
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    props.history.push(`/result?q=${query}`)
+    props.history.push(`/result?q=${query}&page=${1}&size=${defaultPageSize}`)
   }
 
   /**
@@ -40,7 +41,9 @@ const HomePage = (props: any) => {
           onChange={handleInputChnage}
           maxLength={32}
         />
-        <div className={`${query ? styles.delete : styles.hidden}`} onClick={resetForm}>x</div>
+        <div className={`${query ? styles.delete : styles.hidden}`} onClick={resetForm}>
+          x
+        </div>
         <span className={styles.inputGroupButton}>
           <button className={styles.searchButton} itemType="submit" />
         </span>

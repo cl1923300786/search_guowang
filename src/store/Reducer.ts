@@ -1,7 +1,7 @@
 import Actions from './Actions'
 import { IState, INITIAL_STATE } from './Store'
 
-export default function reducer (state: IState = INITIAL_STATE, action: Actions) {
+export default function reducer(state: IState = INITIAL_STATE, action: Actions) {
   switch (action.type) {
     case 'fetch_begin': {
       return {
