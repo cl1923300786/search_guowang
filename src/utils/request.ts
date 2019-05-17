@@ -7,6 +7,7 @@ import { Dispatch } from 'redux'
 
 export interface IParams {
   url: string
+  api: string
   method?: string
   params?: object
   data?: object | any
@@ -41,7 +42,7 @@ export function requestFn(dispatch: Dispatch<Actions>, state: IState, params: IP
       .request({
         url: params.url,
         method: params.method || 'get',
-        baseURL: `${API_URL}/api`,
+        baseURL: `${API_URL}`,
         params: params.params || {},
         paramsSerializer: arg => {
           return Qs.stringify(arg, { arrayFormat: 'brackets' })

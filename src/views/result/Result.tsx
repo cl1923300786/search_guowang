@@ -6,6 +6,7 @@ import Actions from '../../store/Actions'
 import styles from './Result.module.less'
 import SearchItem from '../../components/results/SearchItem'
 import { defaultSearchResults } from '../../config/Constant'
+import { API_URL } from '../../config/Constant'
 
 const pageParams = decodeURIComponent(window.location.search.replace('?', '').split('=')[1])
 
@@ -38,19 +39,59 @@ const Result = () => {
   const getSearchResult = async (q: string) => {
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
-      url: '/v1/search',
+      url: '/search/queryStd',
+      api: API_URL,
+      method: 'get',
       params: {
-        q
+        q: q
       }
     })
+    console.log('getSearchResult',res.data)
     if (res && res.status === 200 && res.data) {
-      console.log(res.data)
-      handleSearchResults(res.data.hits)
+      handleSearchResults2(res.data.result.hits)
     } else {
       console.log('search error')
       handleSearchResults(defaultSearchResults)
     }
     setLoading(false)
+  }
+
+/**
+   * 处理搜索结果（添加title和content）
+   */
+  const handleSearchResults2 = (data: any[]) => {
+    const newResults = data.map((item: any,i:number) => {
+      var title=''
+      var publish_time=''
+      var describe=''
+      for(var key in item.doc){
+          if (key.indexOf("title")!=-1){
+            var temp_title= item.highlight[key]? item.highlight[key]: item.doc[key]
+            console.log('handleSearchResults21',key,temp_title)
+            title+= temp_title!=null? temp_title:'' + " ------ "
+          }
+          if (key.indexOf("publish_time")!=-1 || key.indexOf("create_time" || key.indexOf("issus_time"))!=-1){
+            publish_time= item.highlight[key]? item.highlight[key]: item.doc[key]
+          }
+          if (key.indexOf("abs")!=-1 || key.indexOf("describe")!=-1){
+            describe= item.highlight[key]? item.highlight[key]: item.doc[key]
+          } 
+  　　}
+  // console.log('handleSearchResults2',title,publish_time,describe)
+     return {
+      key: i,
+      title: formatData(title),
+      publish_time: publish_time,
+      content:  formatData(describe)
+    }
+   
+    })
+    setResults(newResults)
+  }
+
+
+  const formatData = (data:any)=>{
+    return (data && data!=null)?data.replace('...', '').replace(/\'/g, '"'):""
   }
 
   /**
