@@ -1,44 +1,164 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+基于 [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## 调试 `npm start`
 
-In the project directory, you can run:
+## 生产环境编译 `npm build`
 
-### `npm start`
+## 编辑器插件列表
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+* [TSLint (deprecated)](https://marketplace.visualstudio.com/items?itemName=eg2.tslint)
+* [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+* [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode#review-details)
+* [autoprefixer](https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-autoprefixer#review-details)
+* [Path Intellisense](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense#review-details)
+* [GitLens — Git supercharged](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens#review-details)
+* [Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag#review-details)
+* [Auto Close Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-close-tag#review-details)
+* [Bracket Pair Colorizer](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer#review-details)
+* [Color Info](https://marketplace.visualstudio.com/items?itemName=bierner.color-info#review-details)
+* [CSS Peek](https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek#review-details)
+* [Document This](https://marketplace.visualstudio.com/items?itemName=joelday.docthis#review-details)
+* [EditorConfig for VS Code](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig#review-details)
+* [Git Blame](https://marketplace.visualstudio.com/items?itemName=waderyan.gitblame#review-details)
+* [Git History](https://marketplace.visualstudio.com/items?itemName=donjayamanne.githistory#review-details)
+* [gitignore](https://marketplace.visualstudio.com/items?itemName=codezombiech.gitignore#review-details)
+* [Guides](https://marketplace.visualstudio.com/items?itemName=spywhere.guides#review-details)
+* [IntelliSense for CSS class names in HTML](https://marketplace.visualstudio.com/items?itemName=Zignd.html-css-class-completion#review-details)
+* [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur#review-details)
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## 编辑器配置
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```json
+// 将设置放入此文件中以覆盖默认设置
+{
+    "editor.fontSize": 14,
+    "workbench.statusBar.visible": true,
+    "workbench.activityBar.visible": false,
+    "editor.renderWhitespace": "boundary",
+    "window.zoomLevel": 0,
+    "editor.wordWrap": "bounded",
+    "editor.insertSpaces": true,
+    "editor.rulers": [
+        120
+    ],
+    "editor.scrollBeyondLastLine": true,
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2,
+    "editor.wordWrapColumn": 120,
+    "editor.minimap.enabled": true,
+    "search.exclude": {
+        "**/dist": true
+    },
+    "editor.snippetSuggestions": "top",
+    "window.openFilesInNewWindow": "off",
+    "eslint.autoFixOnSave": true,
+    "html.format.indentInnerHtml": true,
+    "docthis.includeDescriptionTag": true,
+    "autoprefixer.findExternalAutoprefixer": true,
+    "path-intellisense.extensionOnImport": true,
+    "editor.renderIndentGuides": false,
+    "docthis.enableHungarianNotationEvaluation": true,
+    "docthis.inferTypesFromNames": true,
+    "files.associations": {
+      "*.vue": "vue",
+      "*.wpy": "vue",
+      "*.tsx": "typescriptreact"
+    },
+    "typescript.check.npmIsInstalled": false,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "html",
+        "vue",
+        {
+            "language": "html",
+            "autoFix": true
+        },
+        {
+            "language": "vue",
+            "autoFix": true
+        },
+        {
+            "language": "javascript",
+            "autoFix": true
+        }
+    ],
+    "auto-rename-tag.activationOnLanguage": [
+        "*",
+        ".vue"
+    ],
+    "vetur.format.styleInitialIndent": true,
+    "vetur.validation.template": true,
+    "html.format.endWithNewline": true,
+    "html.format.indentHandlebars": true,
+    "javascript.format.insertSpaceAfterConstructor": true,
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+    "typescript.format.insertSpaceAfterConstructor": true,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.minimap.showSlider": "always",
+    "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
+    "vetur.format.defaultFormatter.ts": "vscode-typescript",
+    "vetur.format.scriptInitialIndent": false,
+    "javascript.implicitProjectConfig.checkJs": true,
+    "javascript.validate.enable": false,
+    "gitlens.advanced.messages": {
+        "suppressCommitHasNoPreviousCommitWarning": false,
+        "suppressCommitNotFoundWarning": false,
+        "suppressFileNotUnderSourceControlWarning": false,
+        "suppressGitVersionWarning": false,
+        "suppressLineUncommittedWarning": false,
+        "suppressNoRepositoryWarning": false,
+        "suppressResultsExplorerNotice": true,
+        "suppressShowKeyBindingsNotice": true
+    },
+    "gitlens.keymap": "alternate",
+    "dart.flutterSdkPath": "/Users/keyangyang/projects/flutter",
+    "breadcrumbs.enabled": true,
+    "scm.alwaysShowProviders": true,
+    "vetur.format.defaultFormatterOptions": {
+        "js-beautify-html": {
+            "wrap_attributes": "force-aligned"
+        }
+    },
+    "extensions.autoUpdate": true,
+    "vetur.format.defaultFormatter.js": "vscode-typescript",
+    "vetur.format.defaultFormatter.html": "js-beautify-html",
+    "search.collapseResults": "alwaysCollapse",
+    "gitlens.views.repositories.files.layout": "auto",
+    "gitlens.views.fileHistory.enabled": true,
+    "gitlens.views.lineHistory.enabled": true,
+    "eslint.alwaysShowStatus": true,
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.suggestSelection": "first",
+    "prettier.semi": false,
+    "prettier.tslintIntegration": true,
+    "bookmarks.useWorkaroundForFormatters": true,
+    "[scss]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[less]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "workbench.iconTheme": "vscode-icons",
+    "prettier.singleQuote": true,
+    "prettier.jsxBracketSameLine": true,
+    "[jsonc]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "typescript.reportStyleChecksAsWarnings": false,
+    "tslint.nodePath": "./node_modules/tslint",
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}
+```

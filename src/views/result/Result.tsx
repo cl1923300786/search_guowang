@@ -7,6 +7,7 @@ import styles from './Result.module.less'
 import SearchItem from '../../components/results/SearchItem'
 import { defaultSearchResults, defaultPageSize } from '../../config/Constant'
 import PageNation from '../../components/pagenation/PageNation'
+import logo from '../../assets/images/logo.png'
 
 const defaultRequestParams = {
   q: decodeURIComponent(
@@ -58,8 +59,9 @@ const Result = () => {
    * 点击搜索按钮
    */
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    console.log('handleSearch')
     event.preventDefault()
-    setRequestParams({
+    const param={
       q: decodeURIComponent(window.location.search.replace('?', '').split('=')[1]),
       page: parseInt(
         window.location.search
@@ -69,11 +71,24 @@ const Result = () => {
         10
       ),
       size: 10
-    })
+    }
+    setRequestParams(param)
     console.log('handleSearch',`${window.location.origin}${window.location.pathname}`)
-    window.location.href = `${window.location.origin}${window.location.pathname}?q=${query}&page=${1}&size=${
-      defaultRequestParams.size
-    }`
+    const param1= {
+      q: query,
+      page: parseInt(
+        window.location.search
+          .replace('?', '')
+          .split('&')[1]
+          .split('=')[1],
+        10
+      ),
+      size: 10
+    }
+    getSearchResult(param1)
+    // window.location.href = `${window.location.origin}${window.location.pathname}?q=${query}&page=${1}&size=${
+    //   defaultRequestParams.size
+    // }`
   }
 
   /**
@@ -95,7 +110,7 @@ const Result = () => {
       handlePageHrefs(res.data.result.totalHits)
       setPages(Math.ceil(res.data.result.totalHits / param.size))
       setNextHref(
-        `${window.location.pathname}?q=${query}&page=${requestParams.page + 1}&size=${
+        `${window.location.origin}${window.location.pathname}?q=${query}&page=${requestParams.page + 1}&size=${
           defaultRequestParams.size
         }`
       )
@@ -283,7 +298,14 @@ const Result = () => {
   return (
     <div>
       <div className={styles.searchContainer}>
-        <form method="GET" action="/search/queryStd" role="search" onSubmit={handleSearch}>
+
+        <div className={styles.logoWrapper}>
+          <a href={`${window.location.origin}`} title="Go to Search Home" className={styles.logoLink}>
+            <img className={styles.logo} src={logo} alt="search logo" />
+          </a>
+        </div>
+        <form method="GET" action="/" role="search" onSubmit={handleSearch}>
+
           <div className={styles.groupContainer}>
             <input
               type="search"
