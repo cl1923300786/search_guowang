@@ -18,7 +18,7 @@ const HomePage = (props: any) => {
    */
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    props.history.push(`/result?q=${query}&page=${1}&size=${defaultPageSize}`)
+    props.history.push(`/search?q=${query}&page=${1}&size=${defaultPageSize}`)
   }
 
   /**

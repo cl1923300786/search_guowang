@@ -70,6 +70,7 @@ const Result = () => {
       ),
       size: 10
     })
+    console.log('handleSearch',`${window.location.origin}${window.location.pathname}`)
     window.location.href = `${window.location.origin}${window.location.pathname}?q=${query}&page=${1}&size=${
       defaultRequestParams.size
     }`
@@ -79,6 +80,7 @@ const Result = () => {
    * 获取搜索结果
    */
   const getSearchResult = async (param: any) => {
+    console.log('getSearchResult',param)
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
       url: '/search/queryStd',
@@ -93,7 +95,7 @@ const Result = () => {
       handlePageHrefs(res.data.result.totalHits)
       setPages(Math.ceil(res.data.result.totalHits / param.size))
       setNextHref(
-        `${window.location.origin}${window.location.pathname}?q=${query}&page=${requestParams.page + 1}&size=${
+        `${window.location.pathname}?q=${query}&page=${requestParams.page + 1}&size=${
           defaultRequestParams.size
         }`
       )
@@ -116,6 +118,7 @@ const Result = () => {
     const newHrefs = []
     const length = Math.ceil(total / defaultRequestParams.size)
     // tslint:disable-next-line:prefer-for-of
+    console.log('handlePageHrefs',`${window.location.origin}${window.location.pathname}`)
     for (let i = 0; i < length; i++) {
       newHrefs.push({
         key: i,
@@ -280,7 +283,7 @@ const Result = () => {
   return (
     <div>
       <div className={styles.searchContainer}>
-        <form method="GET" action="/result" role="search" onSubmit={handleSearch}>
+        <form method="GET" action="/search/queryStd" role="search" onSubmit={handleSearch}>
           <div className={styles.groupContainer}>
             <input
               type="search"

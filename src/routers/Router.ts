@@ -12,7 +12,7 @@ const routes = [
   },
   {
     componet: Result,
-    path: '/result',
+    path: '/search',
     exact: true,
     name: '搜索结果'
   }
