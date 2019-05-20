@@ -7,6 +7,7 @@ import styles from './Result.module.less'
 import SearchItem from '../../components/results/SearchItem'
 import { defaultSearchResults, defaultPageSize } from '../../config/Constant'
 import PageNation from '../../components/pagenation/PageNation'
+import logo from '../../assets/images/logo.png'
 
 const defaultRequestParams = {
   q: decodeURIComponent(
@@ -280,6 +281,11 @@ const Result = () => {
   return (
     <div>
       <div className={styles.searchContainer}>
+        <div className={styles.logoWrapper}>
+          <a href={`${window.location.origin}`} title="Go to Search Home" className={styles.logoLink}>
+            <img className={styles.logo} src={logo} alt="search logo" />
+          </a>
+        </div>
         <form method="GET" action="/result" role="search" onSubmit={handleSearch}>
           <div className={styles.groupContainer}>
             <input

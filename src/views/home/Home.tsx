@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styles from './Home.module.less'
 import { withRouter } from 'react-router-dom'
 import { defaultPageSize } from '../../config/Constant'
+import logo from '../../assets/images/logo.png'
 
 const HomePage = (props: any) => {
   const [query, setQuery] = useState('')
@@ -30,6 +31,7 @@ const HomePage = (props: any) => {
 
   return (
     <form method="GET" action="/" role="search" className={styles.searchWrapper} onSubmit={handleSearch}>
+      <img className={styles.searchLogo} src={logo} alt="search logo" />
       <div className={styles.groupContainer}>
         <input
           type="search"
