@@ -41,7 +41,7 @@ export function requestFn(dispatch: Dispatch<Actions>, state: IState, params: IP
       .request({
         url: params.url,
         method: params.method || 'get',
-        baseURL: `${API_URL}`,
+        baseURL: `${API_URL}`+'/api',
         params: params.params || {},
         paramsSerializer: arg => {
           return Qs.stringify(arg, { arrayFormat: 'brackets' })
