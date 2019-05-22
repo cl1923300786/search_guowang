@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { notification } from 'antd'
 import { requestFn } from '../../utils/request'
 import { useDispatch, IState, useMappedState } from '../../store/Store'
 import { Dispatch } from 'redux'
 import Actions from '../../store/Actions'
 import styles from './Result.module.less'
 import SearchItem from '../../components/results/SearchItem'
-import { defaultSearchResults, defaultPageSize } from '../../config/Constant'
+import { defaultPageSize } from '../../config/Constant'
 import PageNation from '../../components/pagenation/PageNation'
 import logo from '../../assets/images/logo.png'
 
@@ -61,20 +62,13 @@ const Result = () => {
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     console.log('handleSearch')
     event.preventDefault()
-    const param={
+    const param = {
       q: decodeURIComponent(window.location.search.replace('?', '').split('=')[1]),
-      page: parseInt(
-        window.location.search
-          .replace('?', '')
-          .split('&')[1]
-          .split('=')[1],
-        10
-      ),
+      page: 1,
       size: 10
     }
     setRequestParams(param)
-    console.log('handleSearch',`${window.location.origin}${window.location.pathname}`)
-    const param1= {
+    const param1 = {
       q: query,
       page: parseInt(
         window.location.search
@@ -85,7 +79,8 @@ const Result = () => {
       ),
       size: 10
     }
-    getSearchResult(param1)
+    const pageNo = param1.page > 100 ? (param1.page = 100) : param1.page
+    getSearchResult({ ...param1, page: pageNo })
     // window.location.href = `${window.location.origin}${window.location.pathname}?q=${query}&page=${1}&size=${
     //   defaultRequestParams.size
     // }`
@@ -95,7 +90,7 @@ const Result = () => {
    * 获取搜索结果
    */
   const getSearchResult = async (param: any) => {
-    console.log('getSearchResult',param)
+    console.log('getSearchResult', param)
     setLoading(true)
     const { res } = await requestFn(dispatch, state, {
       url: '/search/queryStd',
@@ -105,23 +100,31 @@ const Result = () => {
         pageSize: param.size
       }
     })
+    console.log('getSearchResult', res)
     if (res && res.status === 200 && res.data) {
-      handleSearchResults2(res.data.result.hits)
-      handlePageHrefs(res.data.result.totalHits)
-      setPages(Math.ceil(res.data.result.totalHits / param.size))
-      setNextHref(
-        `${window.location.origin}${window.location.pathname}?q=${query}&page=${requestParams.page + 1}&size=${
-          defaultRequestParams.size
-        }`
-      )
-      setPreviousHref(
-        `${window.location.origin}${window.location.pathname}?q=${query}&page=${requestParams.page - 1}&size=${
-          defaultRequestParams.size
-        }`
-      )
+      if (res.data.code === 0) {
+        handleSearchResults2(res.data.result.hits)
+        handlePageHrefs(res.data.result.totalHits)
+        console.log('getSearchResult pages', Math.ceil(res.data.result.totalHits / param.size))
+        // tslint:disable-next-line:prettier
+        const page= Math.ceil(res.data.result.totalHits / param.size) >= 100 ? 100 : Math.ceil(res.data.result.totalHits / param.size)
+        setPages(page)
+        setNextHref(
+          `${window.location.origin}${window.location.pathname}?q=${query}&page=${requestParams.page + 1}&size=${
+            defaultRequestParams.size
+          }`
+        )
+        setPreviousHref(
+          `${window.location.origin}${window.location.pathname}?q=${query}&page=${requestParams.page - 1}&size=${
+            defaultRequestParams.size
+          }`
+        )
+      } else {
+        errorTips('搜索错误', res.data.msg)
+      }
     } else {
-      console.log('search error')
-      handleSearchResults(defaultSearchResults)
+      errorTips('搜索错误')
+      // handleSearchResults(defaultSearchResults)
     }
     setLoading(false)
   }
@@ -133,8 +136,9 @@ const Result = () => {
     const newHrefs = []
     const length = Math.ceil(total / defaultRequestParams.size)
     // tslint:disable-next-line:prefer-for-of
-    console.log('handlePageHrefs',`${window.location.origin}${window.location.pathname}`)
-    for (let i = 0; i < length; i++) {
+    console.log('handlePageHrefs', `${window.location.origin}${window.location.pathname}`)
+    console.log(total, length)
+    for (let i = 0; i < length && i < 100; i++) {
       newHrefs.push({
         key: i,
         href: `${window.location.origin}${window.location.pathname}?q=${query}&page=${i + 1}&size=${
@@ -193,41 +197,6 @@ const Result = () => {
   }
 
   /**
-   * 处理搜索结果（添加title和content）
-   */
-  const handleSearchResults = (data: any[]) => {
-    const newResults = data.map((i: any) => {
-      const usedStd = i.highlight.used_std
-        ? `${JSON.parse(i.highlight.used_std.replace('...', '').replace(/'/g, '"'))[0].cygx} ${
-            JSON.parse(i.highlight.used_std.replace('...', '').replace(/'/g, '"'))[0].bcybz
-          } `
-        : ''
-      return {
-        ...i,
-        title: `${i.highlight.std_org} ${usedStd}`,
-        content: hanldeResultContent(i)
-      }
-    })
-    setResults(newResults)
-  }
-
-  /**
-   * 处理搜索结果的contnet
-   */
-  const hanldeResultContent = (item: any) => {
-    const zhTitle = item.doc.zh_title + ' '
-    const issueDate = item.doc.issus_date + ' '
-    const usedStd = item.highlight.used_std
-      ? `${JSON.parse(item.highlight.used_std.replace('...', '').replace(/'/g, '"'))[0].cygx} ${
-          JSON.parse(item.highlight.used_std.replace('...', '').replace(/'/g, '"'))[0].bcybz
-        } `
-      : ''
-    const issueOrg = item.highlight.issue_org ? `${item.highlight.issue_org} ` : ''
-    const issuer = item.highlight.issuer ? `${item.highlight.issuer} ` : ''
-    return `${zhTitle}${issueDate}${usedStd}${issueOrg}${issuer}`
-  }
-
-  /**
    * 重置表单
    */
   const resetForm = () => {
@@ -258,6 +227,13 @@ const Result = () => {
         return <SearchItem key={index} title={i.title} content={i.content} />
       })
     }
+  }
+
+  const errorTips = (message = '', description = '') => {
+    notification.error({
+      message,
+      description
+    })
   }
 
   /**
@@ -298,14 +274,12 @@ const Result = () => {
   return (
     <div>
       <div className={styles.searchContainer}>
-
         <div className={styles.logoWrapper}>
           <a href={`${window.location.origin}`} title="Go to Search Home" className={styles.logoLink}>
             <img className={styles.logo} src={logo} alt="search logo" />
           </a>
         </div>
         <form method="GET" action="/" role="search" onSubmit={handleSearch}>
-
           <div className={styles.groupContainer}>
             <input
               type="search"

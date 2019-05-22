@@ -1,7 +1,7 @@
 /**
  * api请求地址
  */
-export const API_URL: string = process.env.NODE_ENV === 'development' ? '' : 'http://10.168.3.216'
+export const API_URL: string = process.env.NODE_ENV === 'development' ? '' : ''
 
 /**
  * 默认请求超时时间

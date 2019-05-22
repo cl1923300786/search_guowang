@@ -45,6 +45,7 @@ const PageNation = (props: any) => {
         return index < defaultPageNationsLength
       })
     } else {
+      console.log(props.hrefs)
       // @ts-ignore
       newHrefs = props.hrefs.filter((i: any, index: number) => {
         return index <= defaultPageNationsLength
