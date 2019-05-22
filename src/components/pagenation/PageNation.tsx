@@ -26,32 +26,28 @@ const PageNation = (props: any) => {
     }
   }
 
-  const renderPageButton = () => {
-    let newHrefs = []
+  const renderHrefFilter = (index: number) => {
     if (
-      props.currentIndex > defaultPageNationsInterval &&
-      props.hrefs.length - props.currentIndex > defaultPageNationsLength - defaultPageNationsInterval
+      props.hrefs.length <= defaultPageNationsLength ||
+      (props.hrefs.length > defaultPageNationsLength && props.currentIndex < defaultPageNationsInterval)
     ) {
-      // @ts-ignore
-      newHrefs = props.hrefs.filter((i: any, index: number) => {
-        return (
-          index < props.currentIndex + defaultPageNationsLength - defaultPageNationsInterval &&
-          index >= props.currentIndex - defaultPageNationsInterval
-        )
-      })
-    } else if (props.currentIndex < defaultPageNationsInterval && props.hrefs.length > defaultPageNationsLength) {
-      // @ts-ignore
-      newHrefs = props.hrefs.filter((i: any, index: number) => {
-        return index < defaultPageNationsLength
-      })
+      return index < defaultPageNationsLength
+      // props.currentIndex 大于6(defaultPageNationsInterval) 且剩余页数大于4(defaultPageNationsLength - defaultPageNationsInterval)
+    } else if (props.hrefs.length - props.currentIndex > defaultPageNationsLength - defaultPageNationsInterval) {
+      return (
+        index < props.currentIndex + defaultPageNationsLength - defaultPageNationsInterval &&
+        index >= props.currentIndex - defaultPageNationsInterval
+      )
+      // props.currentIndex 大于6(defaultPageNationsInterval) 且剩余页数小于等于4(defaultPageNationsLength - defaultPageNationsInterval)
     } else {
-      console.log(props.hrefs)
-      // @ts-ignore
-      newHrefs = props.hrefs.filter((i: any, index: number) => {
-        return index <= defaultPageNationsLength
-      })
+      return index >= props.hrefs.length - defaultPageNationsLength
     }
-    return newHrefs.map((i: any) => {
+  }
+
+  const renderPageButton = () => {
+    // @ts-ignore
+    const tmpHrefs = props.hrefs.filter((i: any, index: number) => renderHrefFilter(index))
+    return tmpHrefs.map((i: any) => {
       return (
         <a
           key={i.key}
